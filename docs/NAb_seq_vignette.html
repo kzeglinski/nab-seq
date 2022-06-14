@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Kathleen Zeglinski" />
+
+<meta name="date" content="2022-06-14" />
+
+<title>NAb-seq bioinformatics tutorial</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">NAb-seq: Nanopore antibody sequencing</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="NAb_seq_vignette.html">Tutorial</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">NAb-seq bioinformatics tutorial</h1>
+<h4 class="author">Kathleen Zeglinski</h4>
+<h4 class="date">2022-06-14</h4>
+
+</div>
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Welcome to the NAb-seq bioinformatics tutorial! This document will
+explain in detail how to generate high-accuracy antibody consensus
+sequences from whole-transcriptome nanopore sequencing data, as
+explained in the <a
+href="https://www.biorxiv.org/content/10.1101/2022.03.25.485728v1">NAb-seq
+paper</a>. An end-to-end script that covers all of the steps is
+available from the <a
+href="https://github.com/kzeglinski/nab-seq">NAb-seq github
+repository</a>, but going step-by-step is helpful for better
+understanding the process and troubleshooting.<br />
+<br />
+The following figure summarises the steps of the NAb-seq workflow: <img
+src="/stornext/Home/data/allstaff/z/zeglinski.k/Artboard%201@2x.png" /></p>
+<p>(since this is a bioinformatics tutorial, we will start from step 7,
+the sequencing QC)<br />
+<br />
+</p>
+<div id="software-required" class="section level3">
+<h3>Software required</h3>
+<p>The NAb-seq bioinformatics tutorial uses the following software:</p>
+<ul>
+<li><p><a href="https://github.com/wdecoster/nanocomp">NanoComp</a>
+(optional, for QC purposes only)</p></li>
+<li><p><a href="https://github.com/lh3/minimap2">minimap2</a> (for
+identification of antibody reads, and annotation of constant
+regions)</p></li>
+<li><p><a href="https://github.com/marcelm/cutadapt">cutadapt</a> (for
+trimming of adapters &amp; polyA tails)</p></li>
+<li><p><a href="https://github.com/shenwei356/seqkit/">SeqKit</a> (for
+manipulation of sequence files)</p></li>
+<li><p><a href="https://www.ncbi.nlm.nih.gov/igblast/">IgBLAST</a> (for
+annotation of variable regions)</p></li>
+<li><p><a href="https://github.com/isovic/racon">Racon</a> (for
+consensus calling/error correction)</p></li>
+<li><p><a href="https://github.com/nanoporetech/medaka">Medaka</a> (for
+consensus calling/error correction)</p></li>
+<li><p><a href="https://www.rstudio.com/">R/RStudio</a> (for processing
+the output of various tools &amp; analysing the results)</p>
+<ul>
+<li><a href="https://www.tidyverse.org/">tidyverse</a> packages will
+need to be installed<br />
+</li>
+</ul></li>
+</ul>
+<p>As each tool is required during the analysis process, installation
+instructions are provided. Alternatively, detailed instructions for
+installing and using each of the tools can be found at the links
+above.<br />
+<br />
+</p>
+</div>
+<div id="input-files" class="section level3">
+<h3>Input files</h3>
+<p>Before beginning, it is important to prepare the necessary input
+files. These are:</p>
+<ul>
+<li><p><strong>Basecalled and demultiplexed ‘pass’ <a
+href="https://en.wikipedia.org/wiki/FASTQ_format">fastq</a>
+files</strong>. These files come from running nanopore’s guppy
+basecalling tool, and should have names like barcode1_pass.fq.gz</p>
+<ul>
+<li><p><em>Basecalling</em> means converting reads from raw signal into
+nucleotide sequences</p></li>
+<li><p><em>Demultiplexing</em> means bioinformatically separating reads
+based on the barcodes added during library preparation</p></li>
+<li><p><em>Pass reads</em> are reads that have an average quality above
+a certain cutoff (for nanopore super-high accuracy reads, this is a Q
+score of 10, or about 90% accuracy)</p></li>
+</ul></li>
+<li><p><strong>Constant gene reference fasta file.</strong> This should
+be a <a href="https://en.wikipedia.org/wiki/FASTA_format">fasta</a>
+format file containing the sequences of all constant genes for your
+organism of interest. In the <a
+href="https://github.com/kzeglinski/nab-seq">NAb-seq github
+repository</a>, files for rat and mouse are provided. To ensure you have
+the most up-to-date information, or to make files for another organism,
+these reference sequences can be retrieved from the <a
+href="https://www.imgt.org/vquest/refseqh.html#VQUEST">IMGT website</a>.
+See <a href="#preparing-the-reference-files-from-imgt">the appendix</a>
+for detailed instructions on how to prepare the reference
+files.</p></li>
+<li><p><strong>Variable AND constant gene reference fasta file.</strong>
+This file should be the same as above, except that it should include the
+V(D)J variable region genes as well as the constant ones.</p></li>
+<li><p><strong>Sequencing summary .txt file.</strong> This is a file
+generated during sequencing, and it contains information about the reads
+(e.g. length, quality, number). This file is optional: it is required
+only for the quality control (QC) process.<br />
+</p></li>
+</ul>
+<p>In this tutorial, we will use as an example the reads from library A
+(representing the 7D10 antibody sequence). More information about this
+sample and how it was generated can be found in the <a
+href="https://www.biorxiv.org/content/10.1101/2022.03.25.485728v1">NAb-seq
+paper</a>. This data can be downloaded from the <a
+href="https://github.com/kzeglinski/nab-seq">NAb-seq github
+repository</a>, in the <code>tutorial</code> folder. <strong>EDIT TO
+SHOW NEW LOCATION</strong><br />
+<br />
+</p>
+</div>
+</div>
+<div id="quality-control" class="section level2">
+<h2>Quality control (QC)</h2>
+<p>Quality control (QC) is an important first step in bioinformatic
+workflows. QC tools can give us an idea of how well the sequencing run
+worked, in terms of the number of reads, what their quality (accuracy)
+is and how long they are. There are a number of tools for QC of nanopore
+sequencing data, but here we will use NanoComp.<br />
+<br />
+</p>
+<div id="qc-with-nanocomp" class="section level3">
+<h3>QC with NanoComp</h3>
+<p>NanoComp is written in python, and can be installed via pip using the
+command: <code>pip install NanoComp</code>.</p>
+<p>Once installed, the QC can be run as follows from within the
+<code>tutorial</code> folder:</p>
+<pre class="bash"><code># make a folder to store the QC results
+mkdir qc
+
+# run NanoComp
+NanoComp --threads 4 --outdir qc --prefix &quot;hybridomas&quot; --barcoded --summary input_data/sequencing_summary_AGG119_0904ab6e.txt.gz</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>--threads 4</code> is the number of threads</p></li>
+<li><p><code>--outdir qc</code> tells NanoComp to put its output in the
+<code>qc</code> folder</p></li>
+<li><p><code>--prefix "hybridomas"</code> is the name we want to give
+this QC report</p></li>
+<li><p><code>--barcoded</code> tells NanoComp that our sequencing run is
+barcoded, so it will compare the various QC metrics across
+barcodes</p></li>
+<li><p><code>--summary</code> tells NanoComp the location of our
+sequencing summary file<br />
+<br />
+</p></li>
+</ul>
+<p>This command will produce a range of output files. These include:</p>
+<ul>
+<li><p><code>hybridomasNanoComp-report.html</code> which is report that
+will open in any web browser, containing all of the QC plots</p></li>
+<li><p><code>hybridomasNanoComp-data.tsv.gz</code> which is a file that
+contains the raw QC data used to make the plots. This can be useful if
+you want to do further analysis or make figures for a
+publication</p></li>
+<li><p>A range of .png files of each of the individual plots<br />
+</p></li>
+</ul>
+<p>When looking at the results, the most important metric is the number
+of reads per barcode. <strong>A minimum of at least 40,000 reads per
+barcode is recommended</strong>. Below this number, the number of
+antibody transcripts may be insufficient to generate highly-accurate
+consensus sequences. If you are trying to detect the presence of
+additional productive heavy/light chains (which may have a low abundance
+<span class="citation">(Bradbury et al. 2018)</span>), then the more
+reads the better.<br />
+<br />
+</p>
+</div>
+</div>
+<div id="identification-of-antibody-reads" class="section level2">
+<h2>Identification of antibody reads</h2>
+<p>Once we have verified that the sequencing run went ok, the next step
+is to identify antibody reads. We will do this by aligning all of our
+reads (which represent the whole transcriptome) to the IMGT antibody
+reference sequences described in the <a href="#input-files">input files
+section</a>. The alignment tool (<a
+href="https://github.com/lh3/minimap2">minimap2</a>) will output a file
+describing all of the alignments it found between our reads and the
+antibody reference sequences. We will process this file in R to get a
+list of all candidate antibody reads, and then extract these from the
+main file using <a
+href="https://github.com/shenwei356/seqkit/">SeqKit</a>.<br />
+<br />
+</p>
+<div id="aligning-all-reads-to-references" class="section level3">
+<h3>Aligning reads to the antibody reference sequences</h3>
+<p>If you don’t have it already, you will first need to install
+minimap2. This is easiest through conda (more information about setting
+up conda can be found <a
+href="https://docs.conda.io/projects/conda/en/latest/user-guide/getting-started.html">here</a>).
+You can simply run the command
+<code>conda install -c bioconda minimap2</code>. Alternatively, it is
+available to download from <a
+href="https://github.com/lh3/minimap2/releases">github</a>.<br />
+</p>
+<p>Running minimap2 is straightforward:</p>
+<pre class="bash"><code># make a folder to store the results of this step
+mkdir identifying_ab_reads
+
+# run minimap2
+minimap2 -x map-ont -n 4 \
+reference_sequences/imgt_rattus_norvegicus_refs.fasta \
+inputdata/library_A_pass.fq.gz &gt; \
+identifying_ab_reads/library_A_reference_alignment.paf</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>-x map-ont</code> tells minimap2 to use settings designed
+for aligning error-prone long reads</p></li>
+<li><p><code>-n 4</code> is the number of threads</p></li>
+<li><p><code>reference_sequences/imgt_rattus_norvegicus_refs.fasta</code>
+is the location of the IMGT antibody reference sequence file described
+in the <a href="#input-files">input files section</a>.</p></li>
+<li><p><code>inputdata/library_A_pass.fq.gz</code> is the location of
+our basecalled, demultiplexed pass reads file</p></li>
+<li><p><code>identifying_ab_reads/library_A_reference_alignment.paf</code>
+is the output file, where minimap2 will give us information about the
+alignments<br />
+</p></li>
+</ul>
+<p>We will now read this file into R to get a list of all the
+antibody-containing reads.</p>
+<pre class="r"><code># read the file into R
+# col_names = FALSE lets it know that the first row isn&#39;t column names, rather it is data
+library_A_paf &lt;- read_tsv(
+  &quot;identifying_ab_reads/library_A_reference_alignment.paf&quot;, 
+  col_names = FALSE)
+
+# grab the first column, X1 (this is the one with the names of the antibody-containing reads)
+# we use unique() here to account for reads aligning to multiple reference sequences
+library_A_ab_read_names &lt;- unique(library_A_paf$X1)
+
+# write out these read names into a file, which we can use to subset our reads later
+# we use \n (new line) to separate the names, so each name will be on its own line
+write_lines(library_A_ab_read_names, 
+            &quot;identifying_ab_reads/library_A_ab_read_names.txt&quot;,
+            sep = &quot;\n&quot;)</code></pre>
+<p><br />
+Also, at this stage, you might want to check how many antibody
+containing reads you have, broken down by whether they are heavy or
+light chain. This can be done in R as follows:</p>
+<pre class="r"><code># to count heavy chain reads
+length(unique(library_A_paf[grepl(&quot;IGH&quot;, library_A_paf$X6) ,]$X1))</code></pre>
+<pre><code>## [1] 1111</code></pre>
+<pre class="r"><code># to count a specific heavy chain isotype, like IGHG
+# can replace IGHG with IGHM or IGHA or IGHD etc
+length(unique(library_A_paf[grepl(&quot;IGHG&quot;, library_A_paf$X6) ,]$X1))</code></pre>
+<pre><code>## [1] 1083</code></pre>
+<pre class="r"><code># to count kappa light chains
+length(unique(library_A_paf[grepl(&quot;IGK&quot;, library_A_paf$X6) ,]$X1))</code></pre>
+<pre><code>## [1] 4277</code></pre>
+<pre class="r"><code># to count lambda light chains
+length(unique(library_A_paf[grepl(&quot;IGL&quot;, library_A_paf$X6) ,]$X1))</code></pre>
+<pre><code>## [1] 845</code></pre>
+<p>At a minimum, <strong>it would be good to have at least 25 reads for
+each of the heavy and light chains</strong>.<br />
+<br />
+</p>
+</div>
+<div id="extracting-antibody-reads" class="section level3">
+<h3>Extracting antibody reads</h3>
+<p>Once we have a list of the names of the antibody-containing reads, we
+need to extract these from the .fastq file that contains all our reads
+(the whole transcriptome). This will give us a second .fastq file that
+just contains antibody sequences that will be used in the next
+steps.</p>
+<p>To do this, we will use <a
+href="https://github.com/shenwei356/seqkit/">SeqKit</a>, a program
+designed for manipulating .fasta and .fastq files. It is best downloaded
+through conda using the command
+<code>conda install -c bioconda seqkit</code>. Other installation
+methods are available on the <a
+href="https://github.com/shenwei356/seqkit/">SeqKit github
+page</a>.<br />
+<br />
+</p>
+<p>Once installed, we can extract the antibody containing reads as
+follows:</p>
+<pre class="bash"><code>seqkit grep --by-name --use-regexp \
+-f identifying_ab_reads/library_A_ab_read_names.txt \
+inputdata/library_A_pass.fq.gz \
+-o identifying_ab_reads/library_A_ab_reads.fastq
+</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>grep</code> is the tool within SeqKit that searches for
+sequences</p></li>
+<li><p><code>--by-name</code> tells SeqKit to match reads by their full
+name</p></li>
+<li><p><code>--use-regexp</code> tells SeqKit to use patterns that are
+<a href="https://en.wikipedia.org/wiki/Regular_expression">regular
+expressions</a></p></li>
+<li><p><code>-f identifying_ab_reads/library_A_ab_read_names.txt</code>
+tells SeqKit where it can find the read names</p></li>
+<li><p><code>-o identifying_ab_reads/library_A_ab_reads.fastq</code> is
+the output file (a .fastq file of just antibody reads)<br />
+<br />
+</p></li>
+</ul>
+</div>
+</div>
+<div id="read-trimming" class="section level2">
+<h2>Read trimming</h2>
+<p>Now that we have our antibody reads, we need to trim off polyA tails.
+This is important because they can interfere with the consensus calling
+process. Note that we do not need to trim off any adapters for this data
+because when sequencing hybridomas using the nanopore PCR-cDNA kit as
+explained in the <a
+href="https://www.biorxiv.org/content/10.1101/2022.03.25.485728v1">NAb-seq
+paper</a>, adapters and barcodes are trimmed off by guppy after
+basecalling.</p>
+<p>To trim our reads, we will use <a
+href="https://github.com/marcelm/cutadapt">cutadapt</a>. It can be
+installed through conda using the following command:
+<code>conda install -c bioconda cutadapt</code><br />
+<br />
+</p>
+<p>Once installed, cutadapt can be run as follows:</p>
+<pre class="bash"><code>cutadapt -a &quot;A{100}&quot; -g &quot;T{100}&quot; -n 2 \
+-o identifying_ab_reads/library_A_trimmed.fastq \
+identifying_ab_reads/library_A_ab_reads.fastq
+</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>-a "A{100}"</code> tells cutadapt to trim a sequence of up
+to 100 repeated A nucleotides from the 3’ end of the reads</p></li>
+<li><p><code>-g "T{100}"</code> tells cutadapt to trim a sequence of up
+to 100 repeated T nucleotides from the 5’ end of the reads</p></li>
+<li><p><code>-n 2</code> tells cutadapt to run twice, once to detect the
+3’ polyA tail and once to detect the 5’ polyT</p></li>
+<li><p><code>-o library_A_trimmed.fastq</code> is the output file
+containing our trimmed reads<br />
+<br />
+</p></li>
+</ul>
+<p>After trimming it is also a good idea to make a .fasta version of
+this file (.fasta files contain the sequence only, while .fastq files
+also contain base quality information). This is important because
+IgBLAST (the tool we will use in the next step to identify variable
+region genes) needs a .fasta format input file. It can be done using
+SeqKit:</p>
+<pre class="bash"><code>seqkit fq2fa identifying_ab_reads/library_A_trimmed.fastq \
+-o identifying_ab_reads/library_A_trimmed.fasta
+</code></pre>
+<p><br />
+</p>
+</div>
+<div id="grouping-by-germline-genes" class="section level2">
+<h2>Grouping by germline genes</h2>
+<p>Now that the reads have been trimmed, we can begin the process of
+error correction. To ensure that the corrections we make are accurate,
+we must group the antibody reads by their germline V(D)J genes. This is
+because we know that not all of the heavy/light chain transcripts in a
+cell will be the same: there may be leaky transcription from the second
+allele, hybridomas may express multiple productive heavy/light chains
+<span class="citation">(Bradbury et al. 2018)</span> and there could be
+PCR chimeras between the different transcripts. Our error correction
+approach relies on taking the consensus of multiple copies of the
+<strong>same</strong> transcript, which means we first need to
+<strong>group</strong> those transcripts that are the same. Transcripts
+are grouped based on their variable and constant germline genes which we
+will identify using IgBLAST and minimap2 respectively.<br />
+<br />
+</p>
+<div id="annotation-using-igblast" class="section level3">
+<h3>Annotation of variable regions using IgBLAST</h3>
+<p>We can identify variable region genes (V, D and J) using <a
+href="https://www.ncbi.nlm.nih.gov/igblast/">IgBLAST</a>. Other tools
+you could use include <a
+href="https://github.com/mikessh/migmap">MiGMAP</a> or <a
+href="https://www.imgt.org/IMGTindex/IMGTHighV-QUEST.php">IMGT/HighV-QUEST</a>
+but here we will focus on <a
+href="https://www.ncbi.nlm.nih.gov/igblast/">IgBLAST</a> as it is freely
+available and can be used through a <a
+href="https://www.ncbi.nlm.nih.gov/igblast/">webserver</a> or the <a
+href="https://ncbi.github.io/igblast/">command line</a>.</p>
+<p>Installing the command line version of IgBLAST is relatively
+complicated. The official instructions are available <a
+href="https://ncbi.github.io/igblast/cook/How-to-set-up.html">here</a>,
+and there is another good guide <a
+href="https://github.com/xinyu-dev/igblast">here</a>. If you would
+prefer to use the web version, there are step-by-step instructions
+available in <a href="#using-igblast-webserver">the appendix</a>.<br />
+<br />
+</p>
+<p>The command-line tool can be used as follows:</p>
+<pre class="bash"><code># first, make the directory that we will use to store this step&#39;s results
+mkdir grouping_by_germline_genes
+mkdir consensus_calling
+
+igblast_database_path=&quot;put your path here&quot;
+igblast_auxiliary_data_path=&quot;put your path here&quot;
+igblastn -germline_db_V ${igblast_database_path}/rat_V \
+-germline_db_J ${igblast_database_path}/rat_J \
+-germline_db_D ${igblast_database_path}/rat_D \
+-organism rat \
+-query identifying_ab_reads/library_A_trimmed.fasta \
+-auxiliary_data $igblast_auxiliary_data_path -show_translation \
+-num_alignments_V 1 -num_alignments_D 1 -num_alignments_J 1 \
+-outfmt 19 &gt; \
+grouping_by_germline_genes/library_A_igblast_pre_consensus.tsv</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>igblast_database_path</code> is the path to your IgBLAST
+database</p></li>
+<li><p><code>igblast_auxiliary_data_path</code> is the path to your
+auxiliary_data file</p></li>
+<li><p><code>-query identifying_ab_reads/library_A_trimmed.fasta</code>
+tells IgBLAST where to find your trimmed .fasta file of antibody
+reads</p></li>
+<li><p><code>-num_alignments_V</code> (and D and J) are the number of
+V/D/J genes that IgBLAST will output for each clone</p></li>
+<li><p><code>-show_translation</code> tells IgBLAST to show the amino
+acid sequence</p></li>
+<li><p><code>-outfmt 19</code> tells IgBLAST to output an <a
+href="https://docs.airr-community.org/en/stable/datarep/rearrangements.html">AIRR
+formatted table</a><br />
+<br />
+</p></li>
+</ul>
+</div>
+<div id="annotation-using-minimap2" class="section level3">
+<h3>Annotation of constant regions using minimap2</h3>
+<p>As of 13/12/21 IgBLAST can now identify constant regions, but since
+NAb-seq was developed prior to this we will use <a
+href="https://github.com/lh3/minimap2">minimap2</a> instead. The process
+is very similar to how we <a
+href="#identification-of-antibody-reads">identified the antibody
+reads</a>, except this time we will use the reference file that only
+contains constant genes (as described in the <a
+href="#input-files">introduction</a>).<br />
+<br />
+</p>
+<pre class="bash"><code># if you haven&#39;t already, make a directory to store the results of the grouping step
+mkdir grouping_by_germline_genes
+
+# run minimap2
+minimap2 -x map-ont -n 4 \
+reference_sequences/imgt_rattus_norvegicus_constant_regions.fasta \
+identifying_ab_reads/library_A_trimmed.fastq &gt; \
+grouping_by_germline_genes/library_A_constant_alignment.paf</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>-x map-ont</code> tells minimap2 to use settings designed
+for aligning error-prone long reads</p></li>
+<li><p><code>-n 4</code> is the number of threads</p></li>
+<li><p><code>reference_sequences/imgt_rattus_norvegicus_constant_regions.fasta</code>
+is the location of the <strong>constant region only</strong> IMGT
+antibody reference sequence file described in the <a
+href="#input-files">input files section</a>.</p></li>
+<li><p><code>identifying_ab_reads/library_A_trimmed.fastq</code> is the
+location of our trimmed reads from the previous step</p></li>
+<li><p><code>grouping_by_germline_genes/library_A_constant_alignment.paf</code>
+is the output file, where minimap2 will give us information about the
+constant regions of our reads</p></li>
+</ul>
+<p>We will now combine the variable and constant region calls in
+R.<br />
+<br />
+</p>
+</div>
+<div id="grouping-reads-by-germline-genes" class="section level3">
+<h3>Grouping reads by germline genes in R</h3>
+<div id="combining-constant-and-variable-for-grouping"
+class="section level4">
+<h4>Combining the variable and constant calls</h4>
+<p>Before we can group the reads, we need to combine our variable and
+constant calls into one big table. First, we need to read the files
+in:</p>
+<pre class="r"><code># read in variable calls
+library_A_variable_calls &lt;- read_tsv(
+  &quot;grouping_by_germline_genes/library_A_igblast_pre_consensus.tsv&quot;)
+
+# read in constant calls
+library_A_constant_calls &lt;- read_tsv(
+  &quot;grouping_by_germline_genes/library_A_constant_alignment.paf&quot;, 
+  col_names = FALSE)</code></pre>
+<p><br />
+Next, we need to clean up the constant region calls data a little:</p>
+<pre class="r"><code># for the constant calls, we only need three columns: the read name, the read length and the constant gene (C) call
+# select these columns:
+library_A_constant_calls &lt;- library_A_constant_calls[, c(1, 2, 6)]
+
+# give them informative names
+colnames(library_A_constant_calls) &lt;- c(&quot;read_name&quot;, &quot;read_length&quot;, &quot;c_call&quot;)
+
+# remove any duplicate rows (antibodies with 2+ C gene calls)
+library_A_constant_calls &lt;- distinct(library_A_constant_calls, read_name, .keep_all = TRUE)
+
+# tidy up the constant gene names (remove the extra information so it&#39;s just like IGKC*02 etc)
+library_A_constant_calls$c_call &lt;- str_replace(library_A_constant_calls$c_call, &quot;.*?\\|&quot;, &quot;&quot;)
+library_A_constant_calls$c_call &lt;- str_replace(library_A_constant_calls$c_call, &quot;\\|.*&quot;, &quot;&quot;)</code></pre>
+<p><br />
+Finally, we can combine the two tables:</p>
+<pre class="r"><code># tidy up the read names (remove extra information so they can be easily matched)
+library_A_constant_calls$read_name &lt;- str_replace(library_A_constant_calls$read_name, &quot;_.*&quot;, &quot;&quot;)
+library_A_variable_calls$sequence_id &lt;- str_replace(library_A_variable_calls$sequence_id, &quot;_.*&quot;, &quot;&quot;)
+
+# combine the two into one big table
+library_A_calls &lt;- left_join(library_A_variable_calls, library_A_constant_calls, 
+                             by = c(&quot;sequence_id&quot; = &quot;read_name&quot;))</code></pre>
+<p><br />
+</p>
+</div>
+<div id="grouping-reads" class="section level4">
+<h4>Grouping the reads</h4>
+<p>Now that we have a single table with all of the information about our
+antibody reads, we can group those that are the same.</p>
+<pre class="r"><code># add n column to count up how many reads fall into each 
+library_A_calls$n &lt;- rep(1, nrow(library_A_calls))
+
+# group the reads
+library_A_calls %&gt;%
+  group_by(v_call, d_call, j_call, c_call) %&gt;%
+  summarise(count = sum(n), .groups = &quot;keep&quot;, 
+            reads = paste(sequence_id, collapse = &quot;\n&quot;)) -&gt; grouped_library_A_calls
+
+# write out a copy of this table 
+write_tsv(grouped_library_A_calls, 
+          &quot;grouping_by_germline_genes/grouped_library_A_calls.tsv&quot;)</code></pre>
+<p><br />
+</p>
+<p>At this stage, you might like to take a closer look at the grouped
+gene calls. In the next step, we will prepare the necessary files for
+calling a consensus on the top <em>n</em> most abundant groups. You can
+choose a value of <em>n</em> that suits you, although it is worth
+keeping in mind that:</p>
+<ol style="list-style-type: decimal">
+<li><p>A consensus can’t be called for groups with less than 3
+reads</p></li>
+<li><p>For groups with 3-5 reads, although a consensus can be called it
+is unlikely to be 100% accurate</p></li>
+<li><p>One of the tools used for consensus calling, <a
+href="https://github.com/nanoporetech/medaka">Medaka</a>, takes a fair
+bit of time to initialise for each group you want to call a consensus
+on. If you want to call large numbers (&gt;300) of consensus sequences
+you may want to consider parallelising this step</p></li>
+</ol>
+<p>In general, we recommend calling a consensus for the top 25 or 50
+groups. In this tutorial, we will use the top 25.<br />
+<br />
+</p>
+</div>
+<div id="preparing-for-consensus" class="section level4">
+<h4>Preparing for consensus calling</h4>
+<p>We will now prepare the files for consensus calling. We need to
+choose a ‘starting copy’ that will form the basis for the error
+correction and make a list of all of the other reads that will be used
+for the correction.</p>
+<pre class="r"><code># separate out the heavy and light chains
+grouped_library_A_calls_H &lt;- filter(grouped_library_A_calls, str_detect(v_call, &quot;H&quot;))
+grouped_library_A_calls_L &lt;- filter(grouped_library_A_calls,
+                                    str_detect(v_call, &quot;H&quot;, negate = TRUE))
+
+# sort them in descending order by read count
+grouped_library_A_calls_H &lt;- arrange(grouped_library_A_calls_H, desc(count))
+grouped_library_A_calls_L &lt;- arrange(grouped_library_A_calls_L, desc(count))
+
+# select the top n clones (here, n = 25)
+# just edit these lines to change the number of groups a consensus will be called for
+grouped_library_A_calls_H &lt;- grouped_library_A_calls_H[1:25,]
+grouped_library_A_calls_L &lt;- grouped_library_A_calls_L[1:25,]
+
+# give each clone&#39;s H and L chain a unique name in the form of H1, H2, L1, L2 etc where 1 is the most abundant, 2 is the second most abundant etc
+grouped_library_A_calls_H$group_id &lt;- paste0(&quot;H&quot;, seq_len(nrow(grouped_library_A_calls_H)))
+grouped_library_A_calls_L$group_id &lt;- paste0(&quot;L&quot;, seq_len(nrow(grouped_library_A_calls_L)))
+
+# write out the read names for each clone into a .txt file
+for (i in seq_along(
+  grouped_library_A_calls_H$group_id)) {
+  this_group_id &lt;- grouped_library_A_calls_H$group_id[i]
+  write_lines(
+    x = grouped_library_A_calls_H$reads[i],
+    file = paste0(&quot;consensus_calling/library_A_&quot;,
+                  this_group_id, &quot;.txt&quot;))
+}
+
+for (i in seq_along(
+  grouped_library_A_calls_L$group_id)) {
+  this_group_id &lt;- grouped_library_A_calls_L$group_id[i]
+  write_lines(
+    x = grouped_library_A_calls_L$reads[i],
+    file = paste0(&quot;consensus_calling/library_A_&quot;,
+                  this_group_id, &quot;.txt&quot;))
+}
+
+# choose the starting copy 
+# make a long format data where each read is a row (but still keep track of which group each read belongs to) 
+grouped_library_A_calls_long &lt;- bind_rows(
+  separate_rows(grouped_library_A_calls_L, reads, sep = &quot;\n&quot;),
+  separate_rows(grouped_library_A_calls_H, reads, sep = &quot;\n&quot;))
+
+# combine this with the read length from the library_A_calls table so that we can choose the longest read in each group
+grouped_library_A_calls_long &lt;- left_join(
+  library_A_calls[, c(&quot;sequence_id&quot;, &quot;read_length&quot;)], 
+  grouped_library_A_calls_long[, c(&quot;reads&quot;, &quot;group_id&quot;)], 
+  by = c(&quot;sequence_id&quot; = &quot;reads&quot;))
+
+# remove the reads that do not belong to a group
+grouped_library_A_calls_long &lt;- 
+  grouped_library_A_calls_long[!is.na(grouped_library_A_calls_long$group_id) ,]
+
+# select the longest read for each group (more likely to have a full-length constant region)
+grouped_library_A_calls_long %&gt;% 
+  group_by(group_id) %&gt;% 
+  slice(which.max(read_length)) -&gt; library_A_grouped_longest_reads
+
+# write out these longest reads as the starting copies
+for (i in seq_along(library_A_grouped_longest_reads$sequence_id)) {
+  this_group_id &lt;- library_A_grouped_longest_reads$group_id[i]
+  write_lines(x = library_A_grouped_longest_reads$sequence_id[i],
+              file = paste0(&quot;consensus_calling/library_A_&quot;, this_group_id, &quot;_starting_point_name.txt&quot;))
+}</code></pre>
+<p><br />
+</p>
+</div>
+</div>
+</div>
+<div id="consensus-calling" class="section level2">
+<h2>Consensus calling</h2>
+<p>Consensus calling is a way to correct errors in sequencing data. By
+stacking up copies of the same sequence and taking their consensus, it
+is possible to remove random errors that likely occur in only one of the
+copies. NAb-seq employs a two-step consensus calling approach, using <a
+href="https://github.com/isovic/racon">Racon</a> and <a
+href="https://github.com/nanoporetech/medaka">Medaka</a> on each group
+of reads from the previous step.<br />
+</p>
+<p>The following code will call the consensus for the 25 most abundant
+heavy and light chains. It should be executed as a shell script.</p>
+<details>
+<summary>
+<p>Click here to show/hide consensus calling code</p>
+</summary>
+<pre class="bash"><code>rebasecalled_reads_file=identifying_ab_reads/library_A_trimmed.fastq
+current_dir=consensus_calling/
+
+# heavy chain
+for i in {1..25}
+do
+  # set up the file names
+  # the clone name is the name of this group of V(D)JC genes
+    clone_name=library_A_H${i}
+    echo $clone_name
+    # the read name file contains all of the reads in the group
+    read_name_file=${current_dir}${clone_name}.txt
+    # the starting point name file contains the name of the read that will be used for polishing
+    starting_point_name_file=${current_dir}${clone_name}_starting_point_name.txt
+    # these are the reads named in the read_name_file
+    clone_reads_file=${current_dir}${clone_name}_reads.fastq
+    # this is the same file as above, but with the reads renamed (long read names or odd characters can cause problems with the tools we will use later)
+    clone_reads_file_renamed=${current_dir}${clone_name}_reads_renamed.fastq
+    # this is the same file as above, but with duplicates renamed (duplicates cause issues with the consensus calling tools)
+    clone_reads_file_renamed_dup_fixed=${current_dir}${clone_name}_reads_renamed_dup_fixed.fastq
+    # this removes any sequences with length 0 (again, causes issues with the tools)
+    clone_reads_file_renamed_dup_fixed_len_fixed=${current_dir}${clone_name}_reads_renamed_dup_fixed_len_fixed.fastq
+    # this is the read that will be the starting point for polishing
+    polishing_starting_point=${current_dir}${clone_name}_starting_point.fastq
+    # the starting point, renamed
+    polishing_starting_point_renamed=${current_dir}${clone_name}_starting_point_renamed.fastq
+    # the alignment of the reads in the group to the starting point
+    all_to_start_overlaps=${current_dir}${clone_name}_overlaps.sam
+    # the output file from racon
+    racon_consensus=${current_dir}${clone_name}_racon_consensus.fasta
+    # the output folder from medaka
+    medaka_consensus_folder=${current_dir}/${clone_name}/
+
+    
+    # confirm we have a starting point for polishing (if not, then skip this group)
+    if [ -f &quot;$starting_point_name_file&quot; ]; then
+        echo &quot;found starting point&quot;
+    else 
+        continue
+    fi
+
+    # extract reads from fastq
+    # clean up file as descibed above 
+    seqkit grep -n -r -f $read_name_file $rebasecalled_reads_file -o $clone_reads_file
+    seqkit replace -p &quot;\_.*&quot; -r &quot;&quot; $clone_reads_file &gt; $clone_reads_file_renamed
+    seqkit rename $clone_reads_file_renamed &gt; $clone_reads_file_renamed_dup_fixed
+    seqkit seq -m 1 $clone_reads_file_renamed_dup_fixed &gt; $clone_reads_file_renamed_dup_fixed_len_fixed
+
+    # extract starting copy
+    seqkit grep -n -r -f $starting_point_name_file $rebasecalled_reads_file -o $polishing_starting_point
+    seqkit replace -p &quot;.*&quot; -r $clone_name $polishing_starting_point &gt; $polishing_starting_point_renamed
+
+    # run racon
+    # need to align first
+    minimap2 $polishing_starting_point_renamed $clone_reads_file_renamed_dup_fixed_len_fixed --secondary=no -ax map-ont -o $all_to_start_overlaps
+    racon -w 5000 -t 4 -u -g -8 -x -6 -m 8 --no-trimming $clone_reads_file_renamed_dup_fixed_len_fixed $all_to_start_overlaps $polishing_starting_point_renamed &gt; $racon_consensus 
+
+    # run medaka
+    mkdir $medaka_consensus_folder
+    medaka_consensus -i $clone_reads_file_renamed_dup_fixed_len_fixed -d $racon_consensus -o $medaka_consensus_folder -t 4 -m r941_min_sup_g507
+    
+    # clean up the output
+    mv ${medaka_consensus_folder}/consensus.fasta ${current_dir}/${clone_name}_medaka_consensus.fasta
+    rm -rf $medaka_consensus_folder
+done
+
+# light chain
+for i in {1..25}
+do
+    clone_name=${barcode}_L${i}
+    echo $clone_name
+    read_name_file=${current_dir}${clone_name}.txt
+    starting_point_name_file=${current_dir}${clone_name}_starting_point_name.txt
+    clone_reads_file=${current_dir}${clone_name}_reads.fastq
+    clone_reads_file_renamed=${current_dir}${clone_name}_reads_renamed.fastq
+    clone_reads_file_renamed_dup_fixed=${current_dir}${clone_name}_reads_renamed_dup_fixed.fastq
+    clone_reads_file_renamed_dup_fixed_len_fixed=${current_dir}${clone_name}_reads_renamed_dup_fixed_len_fixed.fastq
+    polishing_starting_point=${current_dir}${clone_name}_starting_point.fastq
+    polishing_starting_point_renamed=${current_dir}${clone_name}_starting_point_renamed.fastq
+    all_to_start_overlaps=${current_dir}${clone_name}_overlaps.sam
+    racon_consensus=${current_dir}${clone_name}_racon_consensus.fasta
+    medaka_consensus_folder=${current_dir}/${clone_name}/
+
+    
+    # test if we have a full-length starting point. for now we are only proceeding with full-length starting copies (something to change in future???)
+    if [ -f &quot;$starting_point_name_file&quot; ]; then
+        echo &quot;found starting point&quot;
+    else 
+        continue
+    fi
+
+    # extract reads from fastq
+    seqkit grep -n -r -f $read_name_file $rebasecalled_reads_file -o $clone_reads_file
+    seqkit replace -p &quot;\_.*&quot; -r &quot;&quot; $clone_reads_file &gt; $clone_reads_file_renamed
+    seqkit rename $clone_reads_file_renamed &gt; $clone_reads_file_renamed_dup_fixed
+    seqkit seq -m 1 $clone_reads_file_renamed_dup_fixed &gt; $clone_reads_file_renamed_dup_fixed_len_fixed
+
+    # extract starting copy
+    seqkit grep -n -r -f $starting_point_name_file $rebasecalled_reads_file -o $polishing_starting_point
+    seqkit replace -p &quot;.*&quot; -r $clone_name $polishing_starting_point &gt; $polishing_starting_point_renamed
+    
+    # run racon
+    minimap2 $polishing_starting_point_renamed $clone_reads_file_renamed_dup_fixed_len_fixed --secondary=no -ax map-ont -o $all_to_start_overlaps
+    racon -w 5000 -t 4 -u -g -8 -x -6 -m 8 --no-trimming $clone_reads_file_renamed_dup_fixed_len_fixed $all_to_start_overlaps $polishing_starting_point_renamed &gt; $racon_consensus 
+
+    # run medaka
+    mkdir $medaka_consensus_folder
+    medaka_consensus -i $clone_reads_file_renamed_dup_fixed_len_fixed -d $racon_consensus -o $medaka_consensus_folder -t 4 -m r941_min_sup_g507
+    mv ${medaka_consensus_folder}/consensus.fasta ${current_dir}/${clone_name}_medaka_consensus.fasta
+    rm -rf $medaka_consensus_folder
+done</code></pre>
+</details>
+<p><br />
+After the script is finished running, check that the consensus sequences
+were generated ok and then combine them into one file:</p>
+<pre class="bash"><code>cat consensus_calling/*_medaka_consensus.fasta &gt; consensus_calling/library_A_consensus_sequences.fasta
+</code></pre>
+<p><br />
+</p>
+</div>
+<div id="final-annotation-and-analysis" class="section level2">
+<h2>Final annotation and analysis</h2>
+<p>Once the highly accurate consensus sequences have been generated,
+they need to be re-annotated using IgBLAST and minimap2, to confirm the
+V(D)JC genes (in particular, the D gene can sometimes change after the
+consensus is made, as sequencing errors can cause it to be mis-called).
+Finally, the resulting sequences can be analysed.<br />
+<br />
+</p>
+<div id="final-annotation-using-igblast" class="section level3">
+<h3>Annotation of variable regions using IgBLAST</h3>
+<p>As before, instructions will be provided for the command line version
+of IgBLAST. If you would prefer to use the web server, there are
+step-by-step instructions available in <a
+href="#using-igblast-webserver">the appendix</a>.<br />
+<br />
+</p>
+<p>The command-line tool can be used as follows:</p>
+<pre class="bash"><code># first, make the directory that we will use to store this step&#39;s results
+mkdir final_analysis
+
+igblast_database_path=&quot;put your path here&quot;
+igblast_auxiliary_data_path=&quot;put your path here&quot;
+igblastn -germline_db_V ${igblast_database_path}/rat_V \
+-germline_db_J ${igblast_database_path}/rat_J \
+-germline_db_D ${igblast_database_path}/rat_D \
+-organism rat \
+-query consensus_calling/library_A_consensus_sequences.fasta \
+-auxiliary_data $igblast_auxiliary_data_path -show_translation \
+-num_alignments_V 1 -num_alignments_D 1 -num_alignments_J 1 \
+-outfmt 19 &gt; \
+final_analysis/library_A_igblast_post_consensus.tsv</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>igblast_database_path</code> is the path to your IgBLAST
+database</p></li>
+<li><p><code>igblast_auxiliary_data_path</code> is the path to your
+auxiliary_data file</p></li>
+<li><p><code>-query consensus_calling/library_A_consensus_sequences.fasta</code>
+tells IgBLAST where to find your .fasta file of antibody consensus
+sequences</p></li>
+<li><p><code>-num_alignments_V</code> (and D and J) are the number of
+V/D/J genes that IgBLAST will output for each clone</p></li>
+<li><p><code>-show_translation</code> tells IgBLAST to show the amino
+acid sequence</p></li>
+<li><p><code>-outfmt 19</code> tells IgBLAST to output an <a
+href="https://docs.airr-community.org/en/stable/datarep/rearrangements.html">AIRR
+formatted table</a><br />
+<br />
+</p></li>
+</ul>
+</div>
+<div id="final-annotation-using-minimap2" class="section level3">
+<h3>Annotation of constant regions using minimap2</h3>
+<p>Again, this step is more or less the same as in the <a
+href="#annotation-using-minimap2">grouping by germline genes</a>
+section.</p>
+<pre class="bash"><code># if you haven&#39;t already, make a directory to store the results of the grouping step
+mkdir final_analysis
+
+# run minimap2
+minimap2 -x map-ont -n 4 \
+reference_sequences/imgt_rattus_norvegicus_constant_regions.fasta \
+consensus_calling/library_A_consensus_sequences.fasta &gt; \
+final_analysis/library_A_final_constant_alignment.paf</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>-x map-ont</code> tells minimap2 to use settings designed
+for aligning error-prone long reads</p></li>
+<li><p><code>-n 4</code> is the number of threads</p></li>
+<li><p><code>reference_sequences/imgt_rattus_norvegicus_constant_regions.fasta</code>
+is the location of the <strong>constant region only</strong> IMGT
+antibody reference sequence file described in the <a
+href="#input-files">input files section</a>.</p></li>
+<li><p><code>consensus_calling/library_A_consensus_sequences.fasta</code>
+is the location of our consensus sequences from the previous
+step</p></li>
+<li><p><code>final_analysis/library_A_final_constant_alignment.paf</code>
+is the output file, where minimap2 will give us information about the
+constant regions of our reads<br />
+<br />
+</p></li>
+</ul>
+</div>
+<div id="further-analysis" class="section level3">
+<h3>Further analysis in R</h3>
+<p>Now that we have annotated the consensus sequences, we can finally
+bring the data together in R.</p>
+<pre class="r"><code># read in the variable region calls 
+library_A_consensus_variable_calls &lt;- read_tsv(&quot;final_analysis/library_A_igblast_post_consensus.tsv&quot;)
+
+# read in constant region calls
+library_A_consensus_constant_calls &lt;- read_tsv(&quot;final_analysis/library_A_final_constant_alignment.paf&quot;, col_names = FALSE)
+
+# clean up the constant calls as before 
+# keep only the name and the constant gene call
+library_A_consensus_constant_calls &lt;- library_A_consensus_constant_calls[, c(1, 6)]
+# set informative names for the columns
+colnames(library_A_consensus_constant_calls) &lt;- c(&quot;read_name&quot;, &quot;c_call&quot;)
+# remove any duplicates
+library_A_consensus_constant_calls &lt;- 
+  distinct(library_A_consensus_constant_calls, 
+           read_name, .keep_all = TRUE)
+
+# fix the constant gene names (remove extra text so it&#39;s just the allele name like IGKC*02 etc)
+library_A_consensus_constant_calls$c_call &lt;- str_replace(
+  library_A_consensus_constant_calls$c_call, &quot;.*?\\|&quot;, &quot;&quot;)
+library_A_consensus_constant_calls$c_call &lt;- str_replace(
+  library_A_consensus_constant_calls$c_call, &quot;\\|.*&quot;, &quot;&quot;)
+
+# combine the constant and variable calls
+library_A_consensus_calls &lt;- left_join(
+  library_A_consensus_variable_calls,
+  library_A_consensus_constant_calls, 
+  by = c(&quot;sequence_id&quot; = &quot;read_name&quot;))
+
+# tidy up the sequence IDs
+library_A_consensus_calls$sequence_id &lt;- str_replace(
+  library_A_consensus_calls$sequence_id, &quot;^.*_&quot;, &quot;&quot;)
+
+# make a smaller table with just the key columns
+# since the full AIRR format is so massive
+library_A_consensus_calls_key_info &lt;- 
+  library_A_consensus_calls[, c(&quot;sequence_id&quot;, &quot;productive&quot;,
+                                &quot;v_call&quot;, &quot;d_call&quot;, &quot;j_call&quot;, 
+                                &quot;cdr3_aa&quot;, &quot;v_identity&quot;, &quot;c_call&quot;)]
+
+# take a look at the key info 
+head(library_A_consensus_calls_key_info)</code></pre>
+<pre><code>## # A tibble: 6 × 8
+##   sequence_id productive v_call      d_call     j_call   cdr3_aa      v_identity c_call   
+##   &lt;chr&gt;       &lt;lgl&gt;      &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;    
+## 1 H10         FALSE      IGHV5S14*01 IGHD3-7*01 IGHJ2*01 ARHTESPPSLIT       94.3 IGHG2A*01
+## 2 H11         FALSE      IGHV8-17*01 IGHD4-2*01 IGHJ1*01 &lt;NA&gt;               87.5 IGLC1*01 
+## 3 H12         FALSE      IGHV5S14*01 IGHD3-7*01 IGHJ2*01 ARHTGSPPSLIT       94.3 IGHG2A*01
+## 4 H13         FALSE      IGHV1-40*01 IGHD1-5*01 &lt;NA&gt;     &lt;NA&gt;               69.1 IGLC1*01 
+## 5 H14         FALSE      IGLV3S5*01  &lt;NA&gt;       &lt;NA&gt;     &lt;NA&gt;               82.6 IGKC*01  
+## 6 H15         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01</code></pre>
+<p><br />
+</p>
+<p>Now that you have this information, it might be nice to do some
+further analysis! As an example, let’s take a look at the productive
+heavy and light chains, to see if this hybridoma might express multiple
+functional antibody sequences as reported in the literature <span
+class="citation">(Bradbury et al. 2018)</span>.<br />
+<br />
+First, we can add the counts for each group that we determined in the <a
+href="#preparing-for-consensus">preparing for consensus calling</a> step
+to our final data table, so that we have all the information in one
+place. Then, we can filter the data to look for productive sequences
+only.</p>
+<pre class="r"><code># add the count information
+# for heavy chains
+library_A_consensus_calls_key_info &lt;- left_join(
+  library_A_consensus_calls_key_info,
+  grouped_library_A_calls_H[, c(&quot;group_id&quot;, &quot;count&quot;)], 
+  by = c(&quot;sequence_id&quot; = &quot;group_id&quot;))
+
+# for light chains
+library_A_consensus_calls_key_info &lt;- left_join(
+  library_A_consensus_calls_key_info,
+  grouped_library_A_calls_L[, c(&quot;group_id&quot;, &quot;count&quot;)], 
+  by = c(&quot;sequence_id&quot; = &quot;group_id&quot;))
+  
+# combine the counts into one column and sort in descending order
+library_A_consensus_calls_key_info %&gt;% 
+  mutate(count = coalesce(count.x, count.y)) %&gt;%
+  select (-c(count.x, count.y)) %&gt;%
+  arrange(desc(count)) -&gt; library_A_consensus_calls_key_info
+
+# filter for productive sequences only
+library_A_consensus_calls_key_info[library_A_consensus_calls_key_info$productive == TRUE ,]</code></pre>
+<pre><code>## # A tibble: 14 × 9
+##    sequence_id productive v_call      d_call     j_call   cdr3_aa      v_identity c_call    count
+##    &lt;chr&gt;       &lt;lgl&gt;      &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
+##  1 L1          TRUE       IGKV16S1*01 &lt;NA&gt;       IGKJ5*01 QQHNEYPLT          88.4 IGKC*02    2940
+##  2 H1          TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01   461
+##  3 L7          TRUE       IGKV16S1*01 &lt;NA&gt;       IGKJ5*01 QQHNEYPLT          88.4 IGKC*02      67
+##  4 H4          TRUE       IGHV5S14*01 IGHD4-2*01 IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    57
+##  5 H15         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    24
+##  6 H19         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    20
+##  7 H20         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    18
+##  8 &lt;NA&gt;        NA         &lt;NA&gt;        &lt;NA&gt;       &lt;NA&gt;     &lt;NA&gt;               NA   &lt;NA&gt;         NA
+##  9 L19         TRUE       IGHV8-17*01 IGHD1-2*01 IGHJ1*01 &lt;NA&gt;               87.5 IGLC1*01     12
+## 10 L20         TRUE       IGKV3S19*01 &lt;NA&gt;       IGKJ1*01 QHIRELT            87.3 IGKC*01      12
+## 11 H23         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    10
+## 12 L22         TRUE       IGKV3S19*01 &lt;NA&gt;       IGKJ1*01 QHIRELT            87.3 IGKC*01      10
+## 13 H25         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01     9
+## 14 L25         TRUE       IGKV3S19*01 &lt;NA&gt;       IGKJ4*01 &lt;NA&gt;               87.3 IGKC*01       9</code></pre>
+<p>From this, we can note a couple of things:</p>
+<ol style="list-style-type: decimal">
+<li><p>After consensus calling, many groups that were previously called
+as different become the same (for example, L1 and L7 or H1 and H4, H15,
+H19, H20 etc). This is because previously, sequencing errors caused
+their gene calls to be different. Once these errors are corrected, they
+are revealed to be the same sequence.</p></li>
+<li><p>Sometimes, IgBLAST is not able to identify D genes well (as for
+the heavy chain in this example). In this case, it is recommended to try
+<a href="https://www.imgt.org/IMGT_vquest/analysis">IMGT/V-QUEST</a>,
+which generally performs better at this task. Alternatively, changing
+some of IgBLAST’s D gene matching parameters may help.</p></li>
+<li><p>This hybridoma likely expresses an additional functional light
+chain (L20 and L22, with the CDR3 sequence QHIRELT).<br />
+<br />
+</p></li>
+</ol>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>Thank you for following the NAb-seq bioinformatics tutorial!
+Hopefully this has cleared up any questions you have about the process.
+If not, feel free to <a
+href="https://github.com/kzeglinski/nab-seq/issues">open an issue on
+github</a> or send an email to zeglinski.k@wehi.edu.au<br />
+<br />
+</p>
+</div>
+<div id="appendices" class="section level2">
+<h2>Appendices</h2>
+<div id="preparing-the-reference-files-from-imgt"
+class="section level3">
+<h3>Preparing the reference files from IMGT</h3>
+<p>This section describes how to prepare the reference files described
+in the <a href="#input-files">‘input files’</a> section. As an example,
+we will prepare the <em>Rattus norvegicus</em> reference files used in
+this tutorial.</p>
+<ol style="list-style-type: decimal">
+<li><p>Visit the <a href="https://www.imgt.org/genedb/">IMGT/GENE-DB
+website</a></p></li>
+<li><p>Select your species, and select the ‘IG’ option under ‘Molecular
+component’. Then, click submit<img src="imgt_gene_db.png" /></p>
+<p>You should see a page that looks like this:</p>
+<p><img src="search_results.png" /></p></li>
+<li><p>To get the sequences in fasta format, scroll down to the bottom
+of the page and click on the ‘select all genes’ tickbox. Then, choose
+‘F+ORF+all P nucleotide sequences’ under the ‘IMGT/GENE-DB allele
+reference sequences in FASTA format’ section. Finally, click submit.<img
+src="getting_fasta.png" /></p>
+<p>You should see a page that looks like this: <img
+src="fasta_page.png" /></p></li>
+<li><p>Copy the fasta format sequences (everything below the ‘Number of
+results’ line, as indicated by the red box above. Paste these sequences
+into a text editor (e.g. TextEdit on Mac or Notepad on Windows). Save
+this file with a .fasta extension (e.g.
+variable_and_constant_references_rattus_norvegicus.fasta)</p></li>
+<li><p>Done!</p></li>
+</ol>
+<p>The constant region only reference file can be prepared in the same
+way, except in the second step you should select ‘constant’ from the
+‘Gene type’ dropdown box: <img src="constant_only.png" /><br />
+</p>
+</div>
+<div id="using-igblast-webserver" class="section level3">
+<h3>Using the IgBLAST webserver</h3>
+<p>This section describes how to use the <a
+href="https://www.ncbi.nlm.nih.gov/igblast/">IgBLAST webserver</a>. Note
+that currently, only human, mouse, rat, rabbit and rhesus monkey are
+available through this tool (for other organisms, you must use the
+command line IgBLAST or an alternative tool as described in the <a
+href="#annotation-using-igblast">read grouping section</a>).</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://www.ncbi.nlm.nih.gov/igblast/">Visit the IgBLAST
+webpage</a></p></li>
+<li><p>Upload your trimmed .fasta file (see <a
+href="#read-trimming">read trimming section</a>) and change the
+following settings:</p></li>
+</ol>
+<p>After uploading the file, you need to select your organism from the
+drop down box, and then under formatting options choose ‘1’ for the
+number of V, D and J genes to display. Set the ‘number of clonotypes to
+show’ to ‘1’ (this won’t affect results, just a summary table we don’t
+care about) and the ‘alignment format’ to ‘AIRR rearrangement table’.
+<img src="igblast_webserver.png" /></p>
+<p>Then, press ‘search’ and after a short wait, you should see a page
+that looks like this:</p>
+<p><img src="igblast_results.png" /></p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>Scroll to the bottom of the page, and select all rows of the
+first table, as shown in the following image: <img
+src="scroll_to_here.png" /></p></li>
+<li><p>Copy paste that first table into a text editor and save it as a
+.tsv file (for example, library_A_igblast_pre_consensus.tsv). This file
+can then be used to continue with the <a
+href="#grouping-reads-by-germline-genes">read grouping
+step</a>.</p></li>
+</ol>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-bradbury2018" class="csl-entry">
+Bradbury, Andrew R. M., Nathan D. Trinklein, Holger Thie, Ian C.
+Wilkinson, Atul K. Tandon, Stephen Anderson, Catherine L. Bladen, et al.
+2018. <span>“When Monoclonal Antibodies Are Not Monospecific: Hybridomas
+Frequently Express Additional Functional Variable Regions.”</span>
+<em>mAbs</em> 10 (4): 539–46. <a
+href="https://doi.org/10.1080/19420862.2018.1445456">https://doi.org/10.1080/19420862.2018.1445456</a>.
+</div>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
