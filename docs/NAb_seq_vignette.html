@@ -11,14 +11,14 @@
 
 <meta name="author" content="Kathleen Zeglinski" />
 
-<meta name="date" content="2022-06-20" />
+<meta name="date" content="2022-11-12" />
 
-<title>NAb-seq bioinformatics tutorial</title>
+<title>NAb-seq bioinformatics tutorial (old)</title>
 
 <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -85,6 +85,7 @@ div.csl-indent {
 }
 </style>
 
+<link rel="stylesheet" href="bullframe-classless.min.css" type="text/css" />
 
 
 
@@ -346,7 +347,13 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="NAb_seq_vignette.html">Tutorial</a>
+  <a href="new_tutorial.html">Tutorial</a>
+</li>
+<li>
+  <a href="NAb_seq_vignette.html">Old (v0.1) tutorial</a>
+</li>
+<li>
+  <a href="Reference_guide.html">Reference sequences/databases</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -360,15 +367,18 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">NAb-seq bioinformatics tutorial</h1>
+<h1 class="title toc-ignore">NAb-seq bioinformatics tutorial (old)</h1>
 <h4 class="author">Kathleen Zeglinski</h4>
-<h4 class="date">2022-06-20</h4>
+<h4 class="date">2022-11-12</h4>
 
 </div>
 
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
+<p><strong>EDIT 7/11/2022:</strong> This page explains how to run the
+old v0.1 of NAb-seq. We highly recommend you use NAb-seq v0.2 if
+possible (see top of page for an updated tutorial)</p>
 <p>Welcome to the NAb-seq bioinformatics tutorial! This document will
 explain in detail how to generate high-accuracy antibody consensus
 sequences from whole-transcriptome nanopore sequencing data, as
@@ -1249,14 +1259,14 @@ library_A_consensus_calls_key_info &lt;-
 # take a look at the key info 
 head(library_A_consensus_calls_key_info)</code></pre>
 <pre><code>## # A tibble: 6 × 8
-##   sequence_id productive v_call      d_call     j_call   cdr3_aa      v_identity c_call   
-##   &lt;chr&gt;       &lt;lgl&gt;      &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;    
-## 1 H10         FALSE      IGHV5S14*01 IGHD3-7*01 IGHJ2*01 ARHTESPPSLIT       94.3 IGHG2A*01
-## 2 H11         FALSE      IGHV8-17*01 IGHD4-2*01 IGHJ1*01 &lt;NA&gt;               87.5 IGLC1*01 
-## 3 H12         FALSE      IGHV5S14*01 IGHD3-7*01 IGHJ2*01 ARHTGSPPSLIT       94.3 IGHG2A*01
-## 4 H13         FALSE      IGHV1-40*01 IGHD1-5*01 &lt;NA&gt;     &lt;NA&gt;               69.1 IGLC1*01 
-## 5 H14         FALSE      IGLV3S5*01  &lt;NA&gt;       &lt;NA&gt;     &lt;NA&gt;               82.6 IGKC*01  
-## 6 H15         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01</code></pre>
+##   sequence_id productive v_call     d_call j_call cdr3_aa v_identity c_call
+##   &lt;chr&gt;       &lt;lgl&gt;      &lt;chr&gt;      &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt; 
+## 1 H10         FALSE      IGHV5S14*… IGHD3… IGHJ2… ARHTES…       94.3 IGHG2…
+## 2 H11         FALSE      IGHV8-17*… IGHD4… IGHJ1… &lt;NA&gt;          87.5 IGLC1…
+## 3 H12         FALSE      IGHV5S14*… IGHD3… IGHJ2… ARHTGS…       94.3 IGHG2…
+## 4 H13         FALSE      IGHV1-40*… IGHD1… &lt;NA&gt;   &lt;NA&gt;          69.1 IGLC1…
+## 5 H14         FALSE      IGLV3S5*01 &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;          82.6 IGKC*…
+## 6 H15         TRUE       IGHV5S14*… &lt;NA&gt;   IGHJ2… ARHTGK…       94.3 IGHG2…</code></pre>
 <p><br />
 </p>
 <p>Now that you have this information, it might be nice to do some
@@ -1292,22 +1302,23 @@ library_A_consensus_calls_key_info %&gt;%
 # filter for productive sequences only
 library_A_consensus_calls_key_info[library_A_consensus_calls_key_info$productive == TRUE ,]</code></pre>
 <pre><code>## # A tibble: 14 × 9
-##    sequence_id productive v_call      d_call     j_call   cdr3_aa      v_identity c_call    count
-##    &lt;chr&gt;       &lt;lgl&gt;      &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
-##  1 L1          TRUE       IGKV16S1*01 &lt;NA&gt;       IGKJ5*01 QQHNEYPLT          88.4 IGKC*02    2940
-##  2 H1          TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01   461
-##  3 L7          TRUE       IGKV16S1*01 &lt;NA&gt;       IGKJ5*01 QQHNEYPLT          88.4 IGKC*02      67
-##  4 H4          TRUE       IGHV5S14*01 IGHD4-2*01 IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    57
-##  5 H15         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    24
-##  6 H19         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    20
-##  7 H20         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    18
-##  8 &lt;NA&gt;        NA         &lt;NA&gt;        &lt;NA&gt;       &lt;NA&gt;     &lt;NA&gt;               NA   &lt;NA&gt;         NA
-##  9 L19         TRUE       IGHV8-17*01 IGHD1-2*01 IGHJ1*01 &lt;NA&gt;               87.5 IGLC1*01     12
-## 10 L20         TRUE       IGKV3S19*01 &lt;NA&gt;       IGKJ1*01 QHIRELT            87.3 IGKC*01      12
-## 11 H23         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01    10
-## 12 L22         TRUE       IGKV3S19*01 &lt;NA&gt;       IGKJ1*01 QHIRELT            87.3 IGKC*01      10
-## 13 H25         TRUE       IGHV5S14*01 &lt;NA&gt;       IGHJ2*01 ARHTGKSSFFDY       94.3 IGHG2A*01     9
-## 14 L25         TRUE       IGKV3S19*01 &lt;NA&gt;       IGKJ4*01 &lt;NA&gt;               87.3 IGKC*01       9</code></pre>
+##    sequence_id productive v_call    d_call j_call cdr3_aa v_identity c_call
+##    &lt;chr&gt;       &lt;lgl&gt;      &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt; 
+##  1 L1          TRUE       IGKV16S1… &lt;NA&gt;   IGKJ5… QQHNEY…       88.4 IGKC*…
+##  2 H1          TRUE       IGHV5S14… &lt;NA&gt;   IGHJ2… ARHTGK…       94.3 IGHG2…
+##  3 L7          TRUE       IGKV16S1… &lt;NA&gt;   IGKJ5… QQHNEY…       88.4 IGKC*…
+##  4 H4          TRUE       IGHV5S14… IGHD4… IGHJ2… ARHTGK…       94.3 IGHG2…
+##  5 H15         TRUE       IGHV5S14… &lt;NA&gt;   IGHJ2… ARHTGK…       94.3 IGHG2…
+##  6 H19         TRUE       IGHV5S14… &lt;NA&gt;   IGHJ2… ARHTGK…       94.3 IGHG2…
+##  7 H20         TRUE       IGHV5S14… &lt;NA&gt;   IGHJ2… ARHTGK…       94.3 IGHG2…
+##  8 &lt;NA&gt;        NA         &lt;NA&gt;      &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;          NA   &lt;NA&gt;  
+##  9 L19         TRUE       IGHV8-17… IGHD1… IGHJ1… &lt;NA&gt;          87.5 IGLC1…
+## 10 L20         TRUE       IGKV3S19… &lt;NA&gt;   IGKJ1… QHIRELT       87.3 IGKC*…
+## 11 H23         TRUE       IGHV5S14… &lt;NA&gt;   IGHJ2… ARHTGK…       94.3 IGHG2…
+## 12 L22         TRUE       IGKV3S19… &lt;NA&gt;   IGKJ1… QHIRELT       87.3 IGKC*…
+## 13 H25         TRUE       IGHV5S14… &lt;NA&gt;   IGHJ2… ARHTGK…       94.3 IGHG2…
+## 14 L25         TRUE       IGKV3S19… &lt;NA&gt;   IGKJ4… &lt;NA&gt;          87.3 IGKC*…
+## # … with 1 more variable: count &lt;dbl&gt;</code></pre>
 <p>From this, we can note a couple of things:</p>
 <ol style="list-style-type: decimal">
 <li><p>After consensus calling, many groups that were previously called
