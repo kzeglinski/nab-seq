@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kathleen Zeglinski" />
 
-<meta name="date" content="2022-11-12" />
+<meta name="date" content="2022-11-15" />
 
 <title>NAb-seq bioinformatics tutorial (updated)</title>
 
@@ -348,12 +348,124 @@ div.tocify {
 <h1 class="title toc-ignore">NAb-seq bioinformatics tutorial
 (updated)</h1>
 <h4 class="author">Kathleen Zeglinski</h4>
-<h4 class="date">2022-11-12</h4>
+<h4 class="date">2022-11-15</h4>
 
 </div>
 
 
-<p>the new tutorial woooooo</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Welcome to the updated (v0.2) NAb-seq tutorial! This new version is
+written in <a href="https://www.nextflow.io/">nextflow</a>, a workflow
+language that enables portable and scalable computing. This means that
+it should be really easy to use! You can find the github page <a
+href="https://github.com/kzeglinski/nabseq_nf">here</a></p>
+</div>
+<div id="changes" class="section level2">
+<h2>Changes from v0.1</h2>
+<p>Apart from being re-implemented in nextflow, there are a few other
+changes that have been made to NAb-seq:</p>
+<ol style="list-style-type: decimal">
+<li><p>References for mouse and rat now included in NAb-seq by default
+Previously, users had to manually create their own reference sequences
+and IgBLAST databases. Now, we provide these for mouse and rat, so you
+don’t need to do it yourself. If you would like to create your own
+custom reference, please see the reference sequence guide (in the navbar
+at the top of the page)</p></li>
+<li><p>Annotation of constant regions is now performed with IgBLAST The
+original version of NAb-seq was written before IgBLAST could be used on
+constant regions, so constant annotation was performed using minimap2.
+To simplify the bioinformatics, we have now moved to using IgBLAST.
+<strong>Please note that this doesn’t affect the results in any way, and
+we provide pre-built IgBLAST C gene databases for mouse and
+rat.</strong></p></li>
+<li><p>Improved trimming &amp; reorientation of reads We have now
+implemented an improved trimming strategy which also reorients the
+reads. This produces cleaner consensus sequences, with less ‘junk’
+(adapters, polyA tails) hanging off the end. There is also now support
+for custom adapter trimming, by changing the default values of the
+<code>trim_3p</code> and <code>trim_5p</code> parameters (see below for
+more information).</p></li>
+</ol>
+</div>
+<div id="running-the-pipeline" class="section level2">
+<h2>Running the pipeline</h2>
+<p>You can run the NAb-seq pipeline directly from github using the
+command: <code>nextflow run kzeglinski/nabseq_nf -r main</code>.
+However, it is recommended that you clone the repo, as you can edit the
+<a href="#config">nextflow config file</a> to suit your environment.</p>
+<p>Once you’ve cloned the repo, use
+<code>nextflow run nabseq_nf/main.nf</code> to run the pipeline.</p>
+<div id="params" class="section level3">
+<h3>Parameters</h3>
+<p>You can see all of the parameters using
+<code>nextflow run nabseq_nf/main.nf --help</code>:</p>
+<pre><code>Usage: nextflow run ./nabseq_nf/main.nf --fastq_dir [input path] --organism [organism name] --sample_sheet [sample sheet]
+--help                : prints this help message
+
+Required arguments:
+--out_dir             : where the output files will be written to (default: &quot;$projectDir/results)
+--fastq_dir           : where the input fastq files are located
+--organism            : name of the organism whose reference sequences to use (default: &quot;rat&quot;)
+--sample_sheet        : location of the .csv sample sheet (format: barcode01,sample_x)
+
+Optional (only needed for advanced users)
+--num_consensus       : maximum number of consensus sequences to generate for each sample (default: 999)
+--igblast_databases   : location of the igblast databases (default: &quot;$projectDir/references/igblast/&quot;)
+--reference_sequences : location of the reference sequences (default: &quot;$projectDir/references/reference_sequences/&quot;)
+--trim_3p             : pattern for cutadapt to trim off the 3&#39; end (default: &quot;A{20}N{90}&quot;)
+--trim_5p             : pattern for cutadapt to trim off the 5&#39; end (default: &quot;&quot;)
+--medaka_model        : model to use for medaka (depends on your basecalling model, default:&quot;r941_min_sup_g507&quot;)
+--report_title        : title to use for naming the report (default: &quot;NAb-seq report&quot;)</code></pre>
+<p>Most of the above are self-explanatory but: * For the organism,
+NAb-seq supports either ‘mouse’ or ‘rat’ by default. Please note that at
+this stage, we do not support the analysis of multiple different
+organisms in a single run (that is, if you have a mix of mouse and rat
+samples you would need to run NAb-seq twice to analyse them separately.)
+If you would like to add reference files for a custom organism this is
+also possible, and instructions are provided in the reference sequence
+guide (in the navbar at the top of the page)</p>
+<ul>
+<li><p>For the number of consensus sequences, the default is 999, which
+means that NAb-seq will generate up to 999 consensus sequences for the H
+chain and up to 999 consensus sequences for the light chain in a single
+cell. In practice, there will never be this many and so it basically
+just means <strong>generate all possible consensus sequences for each
+chain in each cell</strong> (note that it is only possible to generate
+consensus sequences for groups that have a count of at least 3). You can
+set this number lower to save time, but for hybridomas we recommend that
+you generate at least the top 20 or 30 consensus sequences, given their
+propensity for expressing multiple heavy and/or light chains</p></li>
+<li><p>For the adapter trimming <code>trim_3p</code> and
+<code>trim_5p</code> should be <a
+href="https://cutadapt.readthedocs.io/en/stable/guide.html#multiple-adapters">cutadapt
+patterns</a>. You only need to change the default values if you would
+like to perform trimming of custom adapter sequences. NAb-seq by default
+will trim off the polyA tail.</p></li>
+<li><p>For the medaka model, you can see a list of all models <a
+href="https://github.com/nanoporetech/medaka/tree/master/medaka/data">here</a>.
+Choose one that matches your pore number and basecalling model/guppy
+version. <strong>Note: Don’t choose a model with ‘variant’ in the
+name</strong></p></li>
+</ul>
+</div>
+<div id="config" class="section level3">
+<h3>Nextflow config files</h3>
+<p>The nextflow config file allows you to set NAb-seq’s parameters, as
+well as control other aspects of how nextflow runs this pipeline (for
+example, using SLURM or AWS).</p>
+<p>The config file supplied with NAb-seq has been written to run on
+WEHI’s Milton HPC, and may not work on your system. You might want to
+try looking at the <a href="https://github.com/nf-core/configs">nf-core
+collection of institutional config files</a> to see if they have one for
+your institute. Alternatively, you could try asking a nextflow expert at
+your workplace!</p>
+<p>For more information about writing/editing nextflow config files,
+take a look at the <a
+href="https://www.nextflow.io/docs/latest/config.html">official nextflow
+documentation</a>.</p>
+</div>
+</div>
 
 
 
