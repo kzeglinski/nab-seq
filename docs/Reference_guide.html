@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kathleen Zeglinski" />
 
-<meta name="date" content="2022-11-12" />
+<meta name="date" content="2022-11-15" />
 
 <title>Reference sequences/databases guide</title>
 
@@ -347,12 +347,88 @@ div.tocify {
 
 <h1 class="title toc-ignore">Reference sequences/databases guide</h1>
 <h4 class="author">Kathleen Zeglinski</h4>
-<h4 class="date">2022-11-12</h4>
+<h4 class="date">2022-11-15</h4>
 
 </div>
 
 
-<p>how to make the reference sequences blah blah blah</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This guide will explain how to prepare reference sequences and
+databases for NAb-seq (v0.2). If you are using <strong>mouse</strong> or
+<strong>rat</strong> then there is no need to follow this guide, as the
+references are already included within NAb-seq.</p>
+</div>
+<div id="all-abs" class="section level2">
+<h2>Preparing the all-antibody reference file</h2>
+<ol style="list-style-type: decimal">
+<li><p>Visit the <a href="https://www.imgt.org/genedb/">IMGT/GENE-DB
+website</a></p></li>
+<li><p>Select your species, and select the ‘IG’ option under ‘Molecular
+component’. Then, click submit<img src="imgt_gene_db.png" /></p>
+<p>You should see a page that looks like this:</p>
+<p><img src="search_results.png" /></p></li>
+<li><p>To get the sequences in fasta format, scroll down to the bottom
+of the page and click on the ‘select all genes’ tickbox. Then, choose
+‘F+ORF+all P nucleotide sequences’ under the ‘IMGT/GENE-DB allele
+reference sequences in FASTA format’ section. Finally, click submit.<img
+src="getting_fasta.png" /></p>
+<p>You should see a page that looks like this: <img
+src="fasta_page.png" /></p></li>
+<li><p>Copy the fasta format sequences (everything below the ‘Number of
+results’ line, as indicated by the red box above. Paste these sequences
+into a text editor (e.g. TextEdit on Mac or Notepad on Windows). Save
+this file under <code>nabseq_nf/references/reference_sequences/</code>
+with a .fasta extension <strong>in the format of
+ORGANISM_whatever.fasta</strong> (e.g. rat_all_imgt_refs.fasta)</p></li>
+<li><p>Done!</p></li>
+</ol>
+</div>
+<div id="igblast" class="section level2">
+<h2>Building IgBLAST databases</h2>
+<ol style="list-style-type: decimal">
+<li><p>Download reference files Visit the <a
+href="https://www.imgt.org/vquest/refseqh.html#VQUEST">IMGT/V-QUEST
+website</a> and scroll down until you see <strong>IMGT/GENE-DB reference
+directory sets</strong>. Here, you will need to download the V, (D), J
+and C genes for each of IGH, IGL and IGK. <img
+src="igblast_get_ref_seqs.png" /></p></li>
+<li><p>Combine reference sequences You need to combine all of the V,
+(D), J and C genes into 4 files (so you should have a V genes file
+containing IGHV, IGKV, IGLV and a D genes file containing IGHD, and so
+on). At this stage, you may also like to concatenate the constant
+sequences that come from the same gene (IMGT reports the CH1, CH2, CH3
+etc of each constant region gene separately) although this is not
+essential (just makes the files a bit cleaner). <strong>you should name
+these files like: imgt_ORGANISM_V_unclean and imgt_ORGANISM_D_unclean
+etc</strong> This is important because NAb-seq will use this naming
+convention to look for your databases when running IgBLAST.</p></li>
+<li><p>Clean up the reference sequences Before building the database,
+you will need to <a
+href="https://ftp.ncbi.nih.gov/blast/executables/igblast/release/LATEST">download
+IgBLAST</a> and run <code>edit_imgt_file.pl</code> (located in the bin
+directory) on each of the above files like so:
+<code>ncbi-igblast-1.19.0/bin/edit_imgt_file.pl imgt_ORGANISM_V_unclean &gt; imgt_ORGANISM_V</code></p></li>
+<li><p>Create the databases Finally, you need to run
+<code>makeblastdb</code> like so:
+<code>ncbi-igblast-1.19.0/bin/makeblastdb -parse_seqids -dbtype nucl -in imgt_ORGANISM_V</code>
+If the databases don’t work, you can try checking them using the
+<code>blastdbcheck</code> utility from the BLAST package. One error I
+came across was missing taxonomy information, which was solved by
+following the instructions at the <a
+href="https://www.seqanswers.com/forum/bioinformatics/bioinformatics-aa/29829-deploying-a-local-version-of-blast-having-issues">bottom
+of this page</a>. <strong>important</strong> make sure that these
+databases are located in
+<code>nabseq_nf/references/igblast/databases/</code></p></li>
+</ol>
+</div>
+<div id="igblast-internal" class="section level2">
+<h2>IgBLAST internal &amp; optional data</h2>
+<p>If you are using one of the organisms supported by IgBLAST (human,
+mouse, rat, rabbit and rhesus_monkey), you can get these files from
+within the standalone IgBLAST program. Guide for setting up custom
+organisms coming soon!</p>
+</div>
 
 
 
