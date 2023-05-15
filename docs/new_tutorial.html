@@ -11,7 +11,7 @@
 
 <meta name="author" content="Kathleen Zeglinski" />
 
-<meta name="date" content="2022-11-15" />
+<meta name="date" content="2023-05-15" />
 
 <title>NAb-seq bioinformatics tutorial (updated)</title>
 
@@ -348,7 +348,7 @@ div.tocify {
 <h1 class="title toc-ignore">NAb-seq bioinformatics tutorial
 (updated)</h1>
 <h4 class="author">Kathleen Zeglinski</h4>
-<h4 class="date">2022-11-15</h4>
+<h4 class="date">2023-05-15</h4>
 
 </div>
 
@@ -360,42 +360,24 @@ written in <a href="https://www.nextflow.io/">nextflow</a>, a workflow
 language that enables portable and scalable computing. This means that
 it should be really easy to use! You can find the github page <a
 href="https://github.com/kzeglinski/nabseq_nf">here</a></p>
-</div>
-<div id="changes" class="section level2">
-<h2>Changes from v0.1</h2>
-<p>Apart from being re-implemented in nextflow, there are a few other
-changes that have been made to NAb-seq:</p>
-<ol style="list-style-type: decimal">
-<li><p>References for mouse and rat now included in NAb-seq by default
-Previously, users had to manually create their own reference sequences
-and IgBLAST databases. Now, we provide these for mouse and rat, so you
-don’t need to do it yourself. If you would like to create your own
-custom reference, please see the reference sequence guide (in the navbar
-at the top of the page)</p></li>
-<li><p>Annotation of constant regions is now performed with IgBLAST The
-original version of NAb-seq was written before IgBLAST could be used on
-constant regions, so constant annotation was performed using minimap2.
-To simplify the bioinformatics, we have now moved to using IgBLAST.
-<strong>Please note that this doesn’t affect the results in any way, and
-we provide pre-built IgBLAST C gene databases for mouse and
-rat.</strong></p></li>
-<li><p>Improved trimming &amp; reorientation of reads We have now
-implemented an improved trimming strategy which also reorients the
-reads. This produces cleaner consensus sequences, with less ‘junk’
-(adapters, polyA tails) hanging off the end. There is also now support
-for custom adapter trimming, by changing the default values of the
-<code>trim_3p</code> and <code>trim_5p</code> parameters (see below for
-more information).</p></li>
-</ol>
+<p>A number of changes have been made since the original version. It is
+recommended that you check out the <a
+href="https://github.com/kzeglinski/nabseq_nf/blob/main/CHANGELOG.md">changelog</a>
+for detailed information.</p>
 </div>
 <div id="running-the-pipeline" class="section level2">
 <h2>Running the pipeline</h2>
-<p>You can run the NAb-seq pipeline directly from github using the
-command: <code>nextflow run kzeglinski/nabseq_nf -r main</code>.
-However, it is recommended that you clone the repo, as you can edit the
-<a href="#config">nextflow config file</a> to suit your environment.</p>
-<p>Once you’ve cloned the repo, use
-<code>nextflow run nabseq_nf/main.nf</code> to run the pipeline.</p>
+<ol style="list-style-type: decimal">
+<li>Clone the repo
+(<code>git clone https://github.com/kzeglinski/nabseq_nf.git</code>)</li>
+<li>Edit the <a href="#config">nextflow config file</a> to suit your
+environment.</li>
+<li>Make sure you have nextflow installed on your computer</li>
+<li>Run the pipeline using
+<code>nextflow run nabseq_nf/main.nf</code></li>
+</ol>
+<p>There is a nice guide on running nextflow pipelines for beginners <a
+href="https://bioinformaticsworkbook.org/dataAnalysis/nextflow/01_introductionToNextFlow.html#gsc.tab=0">here</a></p>
 <div id="params" class="section level3">
 <h3>Parameters</h3>
 <p>You can see all of the parameters using
@@ -406,26 +388,31 @@ However, it is recommended that you clone the repo, as you can edit the
 Required arguments:
 --out_dir             : where the output files will be written to (default: &quot;$projectDir/results)
 --fastq_dir           : where the input fastq files are located
---organism            : name of the organism whose reference sequences to use (default: &quot;rat&quot;)
---sample_sheet        : location of the .csv sample sheet (format: barcode01,sample_x)
+--sample_sheet        : location of the .csv sample sheet (format: barcode01,sample_x,rat,1)
 
 Optional (only needed for advanced users)
+--barcode_dirs        : whether the input fastq files are located within folders named barcode01 etc (default: false)
 --num_consensus       : maximum number of consensus sequences to generate for each sample (default: 999)
 --igblast_databases   : location of the igblast databases (default: &quot;$projectDir/references/igblast/&quot;)
 --reference_sequences : location of the reference sequences (default: &quot;$projectDir/references/reference_sequences/&quot;)
 --trim_3p             : pattern for cutadapt to trim off the 3&#39; end (default: &quot;A{20}N{90}&quot;)
---trim_5p             : pattern for cutadapt to trim off the 5&#39; end (default: &quot;&quot;)
+--trim_5p             : pattern for cutadapt to trim off the 5&#39; end (default: &quot;N{90}T{20}&quot;)
 --medaka_model        : model to use for medaka (depends on your basecalling model, default:&quot;r941_min_sup_g507&quot;)
 --report_title        : title to use for naming the report (default: &quot;NAb-seq report&quot;)</code></pre>
-<p>Most of the above are self-explanatory but: * For the organism,
-NAb-seq supports either ‘mouse’ or ‘rat’ by default. Please note that at
-this stage, we do not support the analysis of multiple different
-organisms in a single run (that is, if you have a mix of mouse and rat
-samples you would need to run NAb-seq twice to analyse them separately.)
-If you would like to add reference files for a custom organism this is
-also possible, and instructions are provided in the reference sequence
-guide (in the navbar at the top of the page)</p>
+<p>Most of the above are self-explanatory but:</p>
 <ul>
+<li><p>Previously, the species/organism was specified as a command-line
+argument, but this has moved to the sample sheet (so you can analyse
+data from multiple different species at once). If you want to use the
+built-in <code>mouse</code> or <code>rat</code> references, then you
+don’t need to edit <code>--igblast_databases</code> or
+<code>--reference_sequences</code>.</p></li>
+<li><p><code>--barcode_dirs</code> can be used when your data is
+structured like <code>reads/barcode01/{blah}.fastq</code>, as opposed to
+the default NAb-seq expects, which should be like
+<code>reads/barcode01{any_random_text}.fastq</code>. See the <a
+href="#sample_sheet">sample sheet/file structure</a> section for more
+information.</p></li>
 <li><p>For the number of consensus sequences, the default is 999, which
 means that NAb-seq will generate up to 999 consensus sequences for the H
 chain and up to 999 consensus sequences for the light chain in a single
@@ -433,9 +420,10 @@ cell. In practice, there will never be this many and so it basically
 just means <strong>generate all possible consensus sequences for each
 chain in each cell</strong> (note that it is only possible to generate
 consensus sequences for groups that have a count of at least 3). You can
-set this number lower to save time, but for hybridomas we recommend that
-you generate at least the top 20 or 30 consensus sequences, given their
-propensity for expressing multiple heavy and/or light chains</p></li>
+set this number lower to save time (since the consensus calling is the
+slowest part), but for hybridomas we recommend that you generate at
+least the top 20 or 30 consensus sequences, given their propensity for
+expressing multiple heavy and/or light chains.</p></li>
 <li><p>For the adapter trimming <code>trim_3p</code> and
 <code>trim_5p</code> should be <a
 href="https://cutadapt.readthedocs.io/en/stable/guide.html#multiple-adapters">cutadapt
@@ -464,6 +452,61 @@ your workplace!</p>
 take a look at the <a
 href="https://www.nextflow.io/docs/latest/config.html">official nextflow
 documentation</a>.</p>
+</div>
+<div id="sample_sheet" class="section level3">
+<h3>Sample sheet &amp; file structure</h3>
+<p><a
+href="https://github.com/kzeglinski/nabseq_nf/blob/main/CHANGELOG.md">As
+of v0.2.2, the format of NAb-seq’s sample sheet has changed.</a> Sample
+sheets should now have the structure
+<code>barcode,sample_name,species,report_group</code>. For example:</p>
+<pre><code>barcode,sample_name,species,report_group
+barcode16,28-21-4E10-2-1,rat,1
+barcode17,28-21-5H11-5-1,rat,1
+barcode18,15-14-7H9-19-1,mouse,2
+barcode19,42-11-A4-D1-2-1,mouse,2
+barcode20,9-13-IB4-1-1,rat,3
+barcode21,25-19-5A6-1-1,rat,4</code></pre>
+<p>Where:</p>
+<ul>
+<li><p><code>barcode</code> is the nanopore barcode used.</p></li>
+<li><p><code>sample_name</code> is the name of the sample. I have tested
+that dashes and underscores work ok, other special characters may cause
+issues so use at your own risk</p></li>
+<li><p><code>species</code> is the name of the species for that sample,
+either <code>rat</code> or <code>mouse</code> (<strong>case
+sensitive</strong>) if you want to use NAb-seq’s built-in
+references.</p></li>
+<li><p><code>report_group</code> is used to create separate reports for
+different groups of samples. In the example above, there would be four
+reports created, one with the first two samples, one with the third and
+fourth samples and then the last two samples each in their own report.
+If you want all samples in the same report, just set all to 1.</p></li>
+</ul>
+<p>When looking for input, NAb-seq uses the sample sheet, the path
+provided to <code>--fastq_dir</code> and the switch
+<code>--barcode_dirs</code> to read in data from the following file
+structures:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Default behaviour:</strong> NAb-seq will look in the
+<code>--fastq_dir</code> path and identify FASTQ files (ending in
+.fastq, .fq, .fq.gz or .fastq.gz) that start with the barcodes in the
+sample sheet (e.g. for the above example barcode16.fastq or
+barcode20_pass.fq.gz or barcode18_fail.fastq.gz). If there are multiple
+files for the same barcode, they will be concatenated, so <strong>it’s
+not recommended to leave fail reads in the directory or they will be
+used in the analysis</strong>. However, any FASTQ that don’t start with
+a barcode in the sample sheet (e.g. unclassified_pass.fastq) won’t be
+counted, nor will any files that don’t have a fastq file extension.</li>
+<li><strong>Using the <code>--barcode_dirs</code> parameter:</strong>
+NAb-seq will look in the <code>--fastq_dir</code> path for
+<strong>folders</strong> that have the names of the barcodes in the
+sample sheet (e.g. barcode16/ or barcode21/). Then, all FASTQ files in
+each of these folders (ending in .fastq, .fq, .fq.gz or .fastq.gz) will
+be concatenated. <strong>Note that file extensions can’t be mixed, so
+make sure all the FASTQs are gzipped or are all unzipped otherwise the
+concatenation won’t work</strong></li>
+</ol>
 </div>
 </div>
 
